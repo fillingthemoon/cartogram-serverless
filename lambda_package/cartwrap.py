@@ -17,7 +17,7 @@ def reader(pipe, pipe_name, queue):
 # It returns a generator that yields its output on stdout and stderr in the format:
 #
 #   source, line
-# 
+#
 # where source is a string (either 'stdout' or 'stderr'), and line is a string.
 #
 # It takes as input:
@@ -27,14 +27,16 @@ def reader(pipe, pipe_name, queue):
 # cartogram_executable: A string containg the path to the C code executable
 def generate_cartogram(area_data, gen_file, cartogram_executable, world=False):
 
-    flag = '-s'
+    flag = ''
     if world == True:
-        flag = '-sw'
-        
+        flag = '-w'
+
     cartogram_process = subprocess.Popen([
         cartogram_executable,
         '-g',
         gen_file,
+        '-v',
+        area_data,
         flag
     ],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,bufsize=1)
 
@@ -43,26 +45,13 @@ def generate_cartogram(area_data, gen_file, cartogram_executable, world=False):
     Thread(target=reader,args=[cartogram_process.stdout, "stdout", q]).start()
     Thread(target=reader,args=[cartogram_process.stderr, "stderr", q]).start()
 
-    cartogram_process.stdin.write(str.encode(area_data))
-    cartogram_process.stdin.close()
+    #cartogram_process.stdin.write(str.encode(area_data))
+    #cartogram_process.stdin.close()
 
     for _ in range(2):
         for source, line in iter(q.get, None):
             yield source,line
-    
+
     #output, errors = cartogram_process.communicate(bytes(area_data, 'UTF-8'))
 
     #return io.StringIO(output.decode())
-
-
-
-        
-        
-
-                    
-
-
-
-
-
-
