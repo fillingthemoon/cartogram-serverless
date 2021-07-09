@@ -27,9 +27,9 @@ def reader(pipe, pipe_name, queue):
 # cartogram_executable: A string containg the path to the C code executable
 def generate_cartogram(area_data, gen_file, cartogram_executable, world=False):
 
-    flag = ''
+    flag = '-s'
     if world == True:
-        flag = '-w'
+        flag = '-sw'
 
     cartogram_process = subprocess.Popen([
         cartogram_executable,
